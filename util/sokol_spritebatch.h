@@ -2044,11 +2044,11 @@ static sg_pipeline_desc _sbatch_pipeline_desc_defaults(const sg_pipeline_desc* d
 
     pipeline_desc.color_count = _SBATCH_DEFAULT(pipeline_desc.color_count, 1);
     if (pipeline_desc.color_count == 1) {
-        pipeline_desc.colors[0].blend.enabled = _SBATCH_DEFAULT(desc->colors[0].blend.enabled, true);
-        pipeline_desc.colors[0].blend.src_factor_rgb = _SBATCH_DEFAULT(desc->colors[0].blend.src_factor_rgb, SG_BLENDFACTOR_ONE);
-        pipeline_desc.colors[0].blend.src_factor_alpha = _SBATCH_DEFAULT(desc->colors[0].blend.src_factor_rgb, SG_BLENDFACTOR_ONE);
-        pipeline_desc.colors[0].blend.dst_factor_rgb = _SBATCH_DEFAULT(desc->colors[0].blend.src_factor_rgb, SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA);
-        pipeline_desc.colors[0].blend.dst_factor_alpha = _SBATCH_DEFAULT(desc->colors[0].blend.src_factor_rgb, SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA);
+        pipeline_desc.colors[0].blend.enabled = true;
+        pipeline_desc.colors[0].blend.src_factor_rgb = SG_BLENDFACTOR_SRC_ALPHA;
+        pipeline_desc.colors[0].blend.src_factor_alpha = SG_BLENDFACTOR_ONE;
+        pipeline_desc.colors[0].blend.dst_factor_rgb = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
+        pipeline_desc.colors[0].blend.dst_factor_alpha = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
     }
 
     pipeline_desc.shader.id = _SBATCH_DEFAULT(desc->shader.id, _sbatch.shader.id);
@@ -2602,16 +2602,6 @@ static void _sbatch_draw(int base_element, sg_image current_image, sg_buffer ver
     _sbatch.bindings.vertex_buffers[0] = vertex_buffer;
     sg_apply_bindings(&_sbatch.bindings);
     sg_draw(base_element, num_elements, 1);
-}
-
-static void _sbatch_matmul(sbatch_matrix* p, const sbatch_matrix* a, const sbatch_matrix* b) {
-    for (int r = 0; r < 4; r++) {
-        float ai0 = a->m[0][r], ai1 = a->m[1][r], ai2 = a->m[2][r], ai3 = a->m[3][r];
-        p->m[0][r] = ai0 * b->m[0][0] + ai1 * b->m[0][1] + ai2 * b->m[0][2] + ai3 * b->m[0][3];
-        p->m[1][r] = ai0 * b->m[1][0] + ai1 * b->m[1][1] + ai2 * b->m[1][2] + ai3 * b->m[1][3];
-        p->m[2][r] = ai0 * b->m[2][0] + ai1 * b->m[2][1] + ai2 * b->m[2][2] + ai3 * b->m[2][3];
-        p->m[3][r] = ai0 * b->m[3][0] + ai1 * b->m[3][1] + ai2 * b->m[3][2] + ai3 * b->m[3][3];
-    }
 }
 
 void sbatch_end(void) {
